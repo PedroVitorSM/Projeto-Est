@@ -1,49 +1,95 @@
-const form = document.querySelector('form');
-const container = document.querySelector('#tarefas');
-console.log(form, container);
-let tarefas = JSON.parse(localStorage.getItem('tarefas')) || [];
+// Lista de tarefas com localStorage
 
-const save = () => {
+var form = document.querySelector('form');
+var container = document.querySelector('#tarefas');
+
+// recupera o que já estava salvo no navegador
+var tarefas = JSON.parse(localStorage.getItem('tarefas'));
+if (!tarefas) {
+  tarefas = [];
+}
+
+function save() {
   localStorage.setItem('tarefas', JSON.stringify(tarefas));
-};
+}
 
-const ligarEventos = () => {
-  container.querySelectorAll('li').forEach(li => {
-    li.addEventListener('click', ev => {
-      if (ev.target.classList.contains('delete')) {
-        tarefas = tarefas.filter(t => t.id !== +li.id);
+function ligarEventos() {
+  var itens = container.getElementsByTagName('li');
+
+  for (var i = 0; i < itens.length; i++) {
+    itens[i].onclick = function (ev) {
+      var id = Number(this.id);
+
+      // descobre em que posição do array está essa tarefa
+      var pos = -1;
+      for (var j = 0; j < tarefas.length; j++) {
+        if (tarefas[j].id === id) {
+          pos = j;
+        }
+      }
+
+      if (pos === -1) {
+        return;
+      }
+
+      if (ev.target.className === 'delete') {
+        tarefas.splice(pos, 1);
         save();
         mostrarTarefas();
-      }
-      if (ev.target.classList.contains('check')) {
-        const i = tarefas.findIndex(t => t.id === +li.id);
-        tarefas[i].check = !tarefas[i].check;
+      } else if (ev.target.className === 'check') {
+        if (tarefas[pos].check === true) {
+          tarefas[pos].check = false;
+        } else {
+          tarefas[pos].check = true;
+        }
         save();
       }
-    });
-  });
-};
-
-const mostrarTarefas = () => {
-  container.innerHTML = tarefas.map(t => `
-    <li id="${t.id}">
-      <input type="checkbox" class="check" ${t.check ? 'checked' : ''}>
-      <span>${t.nome}</span>
-      <button class="delete">Excluir</button>
-    </li>
-  `).join('');
-  ligarEventos();
-};
-
-form.addEventListener('submit', e => {
-  e.preventDefault();
-  const input = e.target[0];
-  if (input.value.trim().length > 0) {
-    tarefas.push({ nome: input.value.trim(), id: Date.now(), check: false });
-    save();
-    mostrarTarefas();
-    e.target.reset();
+    };
   }
-});
+}
 
-window.addEventListener('load', mostrarTarefas);
+function mostrarTarefas() {
+  var html = '';
+
+  for (var i = 0; i < tarefas.length; i++) {
+    // se a tarefa já estava marcada, o checkbox precisa vir marcado
+    var checked = '';
+    if (tarefas[i].check === true) {
+      checked = 'checked';
+    }
+
+    html = html + '<li id="' + tarefas[i].id + '">' +
+      '<input type="checkbox" class="check" ' + checked + '>' +
+      '<span>' + tarefas[i].nome + '</span>' +
+      '<button class="delete">Excluir</button>' +
+      '</li>';
+  }
+
+  container.innerHTML = html;
+  ligarEventos();
+}
+
+form.onsubmit = function (e) {
+  e.preventDefault();
+
+  var input = form.querySelector('input[type="text"]');
+  var nome = input.value.trim();
+
+  // não deixa adicionar tarefa vazia
+  if (nome === '') {
+    return;
+  }
+
+  var novaTarefa = {
+    nome: nome,
+    id: Date.now(),
+    check: false
+  };
+
+  tarefas.push(novaTarefa);
+  save();
+  mostrarTarefas();
+  input.value = '';
+};
+
+window.onload = mostrarTarefas;
