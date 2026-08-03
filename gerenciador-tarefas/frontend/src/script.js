@@ -165,7 +165,7 @@ function montarTarefa(tarefa) {
   return li;
 }
 
-// o datetime-local devolve o texto no formato "2026-08-03T14:30".
+// o input date devolve o texto no formato "2026-08-03".
 // guardo exatamente assim (dá pra ordenar e comparar direto como texto,
 // porque vem ano/mês/dia) e converto pro formato br só aqui, na hora de exibir
 function formatarData(valor) {
@@ -173,11 +173,12 @@ function formatarData(valor) {
     return 'não informado';
   }
 
+  // o split do T é pra caso tenha tarefa salva de quando o campo ainda
+  // guardava a hora junto, aí ignora a parte da hora
   var partes = valor.split('T');
   var data = partes[0].split('-');
-  // var hora = partes[1].split(':');   nao precisou, a hora ja vem certa
 
-  return data[2] + '/' + data[1] + '/' + data[0] + ' às ' + partes[1];
+  return data[2] + '/' + data[1] + '/' + data[0];
 }
 
 function mostrarTarefas() {
