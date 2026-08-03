@@ -1,23 +1,63 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Listas</title>
+    <title>Gerenciador de Tarefas</title>
     <link rel="stylesheet" href="style.css">
-    <script src="main.js" defer></script>
+    <script src="script.js" defer></script>
 </head>
 <body>
     <div class="container">
-        <h1>Listas de Tarefas</h1>
-        <form> 
-            <input type="text" placeholder="Digite a nova tarefa">
-            <button>Adicionar</button> 
+        <h1>Gerenciador de Tarefas</h1>
+
+        <form id="form-tarefa">
+            <div class="campo">
+                <label for="assunto">Assunto</label>
+                <input type="text" id="assunto" placeholder="Ex: Arrumar a tela de login">
+            </div>
+            <div class="campo">
+              <label for="responsavel">Responsável</label>
+              <input type="text" id="responsavel" placeholder="Quem vai fazer">
+            </div>
+
+            <div class="campo">
+                <label for="dataInicio">Início</label>
+                <input type="datetime-local" id="dataInicio">
+            </div>
+            <div class="campo">
+                <label for="dataTermino">Término</label>
+                <input type="datetime-local" id="dataTermino">
+            </div>
+            <div class="campo">
+                <label for="status">Status</label>
+                <select id="status">
+                    <option value="pendente">Pendente</option>
+                    <option value="andamento">Em andamento</option>
+                    <option value="finalizado">Finalizado</option>
+                </select>
+            </div>
+
+            <div class="campo">
+                <label for="descricao">Descrição</label>
+                <textarea id="descricao" rows=3 placeholder="Detalhes da tarefa"></textarea>
+            </div>
+
+            <!-- as mensagens de erro da validação caem aqui -->
+            <p id="erro"></p>
+
+            <button type="submit">Adicionar</button>
         </form>
+
+        <!-- <form>
+            <input type="text" placeholder=" nova tarefa">
+            <button>Adicionar</button>
+        </form> -->
+
         <ul id="tarefas"></ul>
-    
-    
+
+
     </div>
-    
+
 </body>
 </html>

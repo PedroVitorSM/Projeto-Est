@@ -4,13 +4,13 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: "Roboto', Sans-serif";
+    font-family: 'Roboto', sans-serif;
 }
 
 body{
-    height: 100vh;
     display: flex;
     place-content: center;
+    padding: 20px;
     background: linear-gradient(to top left, #1e5016, #09e92e);
 }
 
@@ -21,20 +21,72 @@ li{
 .container{
     background-color:#fff;
     border-radius: 10px;
-    height: 500px;
     padding: 20px;
-    width: 350px;
-    box-shadow: 0px 0px 10px rgba(10, 0, 0, 0)
+    width: 400px;
+    box-shadow: 0px 0px 10px rgba(10, 0, 0, 0.2)
 }
-
 h1{
     font-size: 30px;
     font-weight:300;
 }
-form{
-    display: flex;
-    align-items: center;
-    margin: 10px;
+.campo{
+    margin-top: 10px;
+}
+
+label{
+    display: block;
+    font-size: 14px;
+}
+
+input, select, textarea{
+    width: 100%;
+    padding: 5px;
+    border: 1px solid #999;
     border-radius: 5px;
-    border: 3px solid #09e92e
+}
+
+button{
+    margin-top: 10px;
+    padding: 8px;
+    border: none;
+    border-radius: 5px;
+    background-color: #1e5016;
+    color: #fff;
+    cursor: pointer;
+}
+
+#erro{
+    color: red;
+    font-size: 14px;
+}
+
+#tarefas{
+    margin-top: 20px;
+}
+
+.tarefa{
+    border: 1px solid #999;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.tarefa h3{
+    font-size: 16px;
+}
+
+.tarefa p{
+    font-size: 14px;
+}
+
+.rodape{
+    margin-top: 10px;
+}
+
+.rodape select{
+    width: auto;
+}
+
+.delete{
+    background-color: red;
 }
