@@ -4,8 +4,18 @@ var form = document.querySelector('form');
 var container = document.querySelector('#tarefas');
 
 // recupera o que já estava salvo no navegador
-var tarefas = JSON.parse(localStorage.getItem('tarefas'));
-if (!tarefas) {
+// se o que tiver salvo não for um json válido o parse estoura e a página
+// inteira para de funcionar, por isso o try/catch aqui
+var tarefas = [];
+
+try {
+  var salvo = JSON.parse(localStorage.getItem('tarefas'));
+
+  if (Array.isArray(salvo)) {
+    tarefas = salvo;
+  }
+} catch (e) {
+  console.log('não consegui ler as tarefas salvas, começando com a lista vazia');
   tarefas = [];
 }
 
