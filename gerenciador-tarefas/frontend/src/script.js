@@ -142,13 +142,13 @@ function montarTarefa(tarefa) {
 
 function formatarData(valor) {
   if (!valor) {
-    return 'não informado';
+    return ' ';
   }
 
   var partes = valor.split('T');
   var data = partes[0].split('-');
 
-  return data[2] + '/' + data[1] + '/' + data[0];
+  return data[2] + ' - ' + data[1] + ' - ' + data[0];
 }
 
 function mostrarTarefas() {
@@ -163,11 +163,11 @@ function mostrarTarefas() {
 form.onsubmit = function (e) {
   e.preventDefault();
 
-  var assunto = document.querySelector('#assunto').value.trim();
-  var responsavel = document.querySelector('#responsavel').value.trim();
-  var diaInicio = document.querySelector('#dataInicio').value;
-  var diaTermino = document.querySelector('#dataTermino').value;
-  var descricao = document.querySelector('#descricao').value.trim();
+  var assunto = document.querySelector('#assunto').value;
+  var responsavel = document.querySelector('#responsavel').value;
+  var diaInicio = document.querySelector('#diaInicio').value;
+  var diaTermino = document.querySelector('#diaTermino').value;
+  var descricao = document.querySelector('#descricao').value;
   var status = document.querySelector('#status').value;
 
   if (assunto == '' || responsavel == '' || diaInicio == '' || diaTermino == '' ) {

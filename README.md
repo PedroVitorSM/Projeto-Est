@@ -20,9 +20,7 @@ python -m http.server 8000
 ## Erros
 
 Botton Excluir nao realiza o pedido 
-?
-
-
+Adiconar repentimante parou depois da alteração de somente para dia (provavel id errado, f12 retorna : at form.onsubmit (script.js:168:55) OLHAR DEPOIS)
 
 
 
