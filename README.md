@@ -19,18 +19,16 @@ python -m http.server 8000
 
 ## Erros
 
+Botton Excluir nao realiza o pedido 
+?
+
+
+
+
+
+
 # As tarefas 
 
 Antes a tarefa era só `{ id, nome, check }`. Agora tem os campos necessarios. 
-
-### Guardar a data como objeto Date não funciona
-
-Minha primeira ideia foi salvar as datas como `new Date()`. Só que o
-stringify transforma em texto, e quando lê de volta continua texto.
-Aí o primeiro `.getTime()` depois do F5 da erro.
-O input `date` já devolve um texto, então guardo
-desse jeito mesmo. Como receb ano-mês-dia, dá pra comparar direto com `<` e `>`
-como texto normal, que é o que uso pra ver se o término é antes do início.
-
 
 

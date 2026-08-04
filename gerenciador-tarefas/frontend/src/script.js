@@ -1,4 +1,5 @@
 // Lista de tarefas com localStorage
+// Comitt do codigo incorreto, comittei o codigo de leitura
 
 var form = document.querySelector('#form-tarefa');
 var container = document.querySelector('#tarefas');
@@ -6,9 +7,6 @@ var erro = document.querySelector("#erro");
 
 var LISTA_STATUS = ['pendente', 'andamento', 'finalizado'];
 
-// recupera o que já estava salvo no navegador
-// se o que tiver salvo não for um json válido o parse estoura e a página
-// inteira para de funcionar, por isso o try/catch aqui
 var tarefas = [];
 
 try {
@@ -18,7 +16,7 @@ try {
     tarefas = salvo;
   }
 } catch (e) {
-  console.log('não consegui ler as tarefas salvas, começando com a lista vazia');
+  console.log('sem lista de tarefas');
   tarefas = [];
 }
 
@@ -27,10 +25,6 @@ function save() {
   localStorage.setItem('tarefas', JSON.stringify(tarefas));
 }
 
-// antes a tarefa era só {id, nome, check}. agora tem os campos completos,
-// então tudo que estiver no formato antigo precisa ser convertido na hora de
-// abrir, senão a listagem nova quebra tentando ler campo que não existe.
-// quem não tem status é do formato velho
 function migrarTarefa(t) {
   if (t.status) {
     return t;
@@ -56,23 +50,9 @@ function migrarTarefa(t) {
 for (var i = 0; i < tarefas.length; i++) {
   tarefas[i] = migrarTarefa(tarefas[i]);
 }
-
-// grava de volta já convertido, pra não precisar migrar de novo toda vez
 save();
-
 function mostrarErro(msg) {
     erro.textContent = msg;
-}
-
-// descobre em que posição do array está a tarefa
-function acharPosicao(id) {
-  for (var i = 0; i < tarefas.length; i++) {
-    if (tarefas[i].id === id) {
-      return i;
-    }
-  }
-
-  return -1;
 }
 
 function nomeDoStatus(status) {
@@ -83,15 +63,13 @@ function nomeDoStatus(status) {
     return 'Finalizado';
   }
   return 'Pendente';
+  
 }
 
-// monta o <li> de uma tarefa.
-// deixei numa função separada de propósito: como o onclick lá de baixo usa a
-// variável tarefa, se isso ficasse solto dentro do for todos os botões iam
-// mexer na última tarefa da lista (o var não cria escopo por volta)
 function montarTarefa(tarefa) {
   var li = document.createElement('li');
   li.className = 'tarefa ' + tarefa.status;
+
 
   var assunto = document.createElement('h3');
   assunto.textContent = tarefa.assunto;
@@ -106,7 +84,6 @@ function montarTarefa(tarefa) {
   prazo.textContent = formatarData(tarefa.dataInicio) + ' até ' + formatarData(tarefa.dataTermino);
   li.appendChild(prazo);
 
-  // só mostra a descrição se a pessoa escreveu alguma coisa
   if (tarefa.descricao != '') {
     var descricao = document.createElement('p');
     descricao.textContent = tarefa.descricao;
@@ -117,8 +94,6 @@ function montarTarefa(tarefa) {
   var rodape = document.createElement('div');
   rodape.className = 'rodape';
 
-  // antes tinha um checkbox pra marcar como concluída. como agora são três
-  // status e não dois, virou um select aqui na própria listagem
   var troca = document.createElement('select');
 
   for (var i = 0; i < LISTA_STATUS.length; i++) {
@@ -165,16 +140,11 @@ function montarTarefa(tarefa) {
   return li;
 }
 
-// o input date devolve o texto no formato "2026-08-03".
-// guardo exatamente assim (dá pra ordenar e comparar direto como texto,
-// porque vem ano/mês/dia) e converto pro formato br só aqui, na hora de exibir
 function formatarData(valor) {
   if (!valor) {
     return 'não informado';
   }
 
-  // o split do T é pra caso tenha tarefa salva de quando o campo ainda
-  // guardava a hora junto, aí ignora a parte da hora
   var partes = valor.split('T');
   var data = partes[0].split('-');
 
@@ -182,10 +152,7 @@ function formatarData(valor) {
 }
 
 function mostrarTarefas() {
-  // uso textContent e createElement no lugar de montar uma string com innerHTML.
-  // além de ficar mais organizado, o textContent trata o que a pessoa digitou
-  // como texto puro, então não tem como alguém salvar uma tag html no assunto
-  // da tarefa e ela ser executada quando a lista aparecer na tela
+
   container.textContent = '';
 
   for (var i = 0; i < tarefas.length; i++) {
@@ -198,32 +165,21 @@ form.onsubmit = function (e) {
 
   var assunto = document.querySelector('#assunto').value.trim();
   var responsavel = document.querySelector('#responsavel').value.trim();
-  var dataInicio = document.querySelector('#dataInicio').value;
-  var dataTermino = document.querySelector('#dataTermino').value;
+  var diaInicio = document.querySelector('#dataInicio').value;
+  var diaTermino = document.querySelector('#dataTermino').value;
   var descricao = document.querySelector('#descricao').value.trim();
   var status = document.querySelector('#status').value;
 
-  if (assunto == '') {
-    mostrarErro('Preencha o assunto da tarefa.');
-    return;
-  }
-
-  if (responsavel == '') {
-    mostrarErro('Preencha o responsável pela tarefa.');
-    return;
-  }
-
-  // as duas datas são texto no mesmo formato, então dá pra comparar assim mesmo
-  if (dataInicio != '' && dataTermino != '' && dataTermino < dataInicio) {
-    mostrarErro('A data de término não pode ser antes da data de início.');
+  if (assunto == '' || responsavel == '' || diaInicio == '' || diaTermino == '' ) {
+    mostrarErro('Preencha todos os campos da tarefa.');
     return;
   }
 
   var novaTarefa = {
     id: Date.now(),
     responsavel: responsavel,
-    dataInicio: dataInicio,
-    dataTermino: dataTermino,
+    dataInicio: diaInicio,
+    dataTermino: diaTermino,
     assunto: assunto,
     descricao: descricao,
     status: status,
@@ -239,3 +195,4 @@ form.onsubmit = function (e) {
 };
 
 window.onload = mostrarTarefas;
+
