@@ -15,15 +15,17 @@ cd gerenciador-tarefas/frontend/src
 python -m http.server 8000
 ```
 
-# (=> http://localhost:8000
+## => http://localhost:8000
 
 ## Erros
 
 Botton Excluir nao realiza o pedido 
 Adiconar repentimante parou depois da alteração de somente para dia (provavel id errado, f12 retorna : at form.onsubmit (script.js:168:55) OLHAR DEPOIS)
 
-
-
+## Soluções
+Excluir - estava com uma função que eu apaguei sem querer, tive que pesquisar sobre 
+Adicionar tarefa - id como data ao inves de dia
+resolvi todos pelo deltools
 
 # As tarefas 
 

@@ -4,9 +4,7 @@
 var form = document.querySelector('#form-tarefa');
 var container = document.querySelector('#tarefas');
 var erro = document.querySelector("#erro");
-
 var LISTA_STATUS = ['pendente', 'andamento', 'finalizado'];
-
 var tarefas = [];
 
 try {
@@ -120,6 +118,15 @@ function montarTarefa(tarefa) {
   };
 
   rodape.appendChild(troca);
+
+  function acharPosicao(id) {
+    for (var i = 0; i < tarefas.length; i++) {       // roda ate achar o id
+      if (tarefas[i].id === id) {
+        return i; // posição do id
+      }
+    }
+    return -1; // rodo tudo e não achou
+  }
 
   var excluir = document.createElement('button');
   excluir.className = 'delete';
