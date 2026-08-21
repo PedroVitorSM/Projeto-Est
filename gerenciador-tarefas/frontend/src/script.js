@@ -6,6 +6,7 @@ var container = document.querySelector('#tarefas');
 var erro = document.querySelector("#erro");
 var LISTA_STATUS = ['pendente', 'andamento', 'finalizado'];
 var tarefas = [];
+var busca = document.querySelector('#busca');
 
 try {
   var salvo = JSON.parse(localStorage.getItem('tarefas'));
@@ -161,8 +162,11 @@ function formatarData(valor) {
 function mostrarTarefas() {
 
   container.textContent = '';
-
+  var termo = busca.value.toLowerCase(); 
   for (var i = 0; i < tarefas.length; i++) {
+    if (tarefas[i].assunto.toLowerCase().indexOf(termo) === -1) {
+      continue;
+    }
     container.appendChild(montarTarefa(tarefas[i]));
   }
 }
@@ -201,5 +205,6 @@ form.onsubmit = function (e) {
   mostrarErro('');
 };
 
+busca.oninput = mostrarTarefas;
 window.onload = mostrarTarefas;
 
