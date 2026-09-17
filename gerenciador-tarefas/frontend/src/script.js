@@ -2,7 +2,6 @@
 
 var form = document.getElementById('form-tarefa');
 var container = document.getElementById('tarefas');
-var filterInput = document.getElementById('filterInput');
 var LISTA_STATUS = [{id: 'pendente', slug: 'Pendente'}, {id: 'andamento', slug: 'Em Andamento'}, {id: 'finalizado', slug: 'Finalizado'}];
 var tarefas = [];
 
@@ -70,7 +69,7 @@ function addTarefa() {
   tarefas.push(novaTarefa);
   save();
   clearForm();
-  mostrarTarefas();
+  addViewItem(novaTarefa);
 }
 
 function clearForm(){
@@ -86,7 +85,7 @@ function deleteTarefa(id){
   }
   tarefas.splice(pos, 1);
   save();
-  mostrarTarefas();
+  deleteViewItem(id);
 }
 
 /*Muda status da tarefa*/
@@ -97,7 +96,7 @@ function changeStatus(id, value){
   }
   tarefas[pos].status = value;
   save();
-  mostrarTarefas();
+  document.getElementById(id).className = 'tarefa ' + value;
 }
 
 /*Formata Data*/
@@ -116,11 +115,6 @@ function escapeHtml(texto){
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
-}
-
-function nomeDoStatus(id){
-  let status = LISTA_STATUS.find(status => status.id === id);
-  return status ? status.slug : id;
 }
 
 /*Create select options*/
@@ -155,24 +149,34 @@ function layoutTarefa(tarefa){
 </li>`;
 }
 
-/*Pesquisa só nos dados da tarefa (sem pegar o texto das opções do select)*/
-function combinaComFiltro(tarefa, filter){
-  let texto = [tarefa.assunto, tarefa.responsavel, tarefa.descricao, nomeDoStatus(tarefa.status)].join(' ').toLowerCase();
-  return texto.includes(filter);
+/*Adiciona a tarefa na view*/
+function addViewItem(tarefa){
+  let layout = layoutTarefa(tarefa);
+  container.innerHTML += layout;
 }
 
-/*Mostra na view as tarefas que batem com a pesquisa*/
+/*Deleta a tarefa da view*/
+function deleteViewItem(id){
+  document.getElementById(id).remove();
+}
+
+/*Mostra todas as tarefas na view*/
 function mostrarTarefas() {
-  let filter = filterInput.value.trim().toLowerCase();
-  container.innerHTML = tarefas
-    .filter(tarefa => combinaComFiltro(tarefa, filter))
-    .map(tarefa => layoutTarefa(tarefa))
-    .join('');
+  container.innerHTML = tarefas.map(tarefa => layoutTarefa(tarefa)).join('');
+}
+
+function filterTarefas(){
+  let filter = document.getElementById('filterInput').value.toLowerCase();
+  let items = document.querySelectorAll('li');
+  items.forEach(item => {
+    let text = item.textContent.toLowerCase();
+    item.style.display = text.includes(filter) ? 'block' : 'none';
+  });
 }
 
 function clearFilter(){
-  filterInput.value = '';
-  mostrarTarefas();
+  document.getElementById('filterInput').value = '';
+  filterTarefas();
 }
 
 /*Pega o id da tarefa a partir de qualquer elemento dentro do <li>*/
@@ -193,13 +197,12 @@ container.addEventListener('change', function(e) {
 });
 var filter = document.getElementById('filter');
 filter.addEventListener('click', function(e) {
-  if (e.target.classList.contains('filter')) {
-    mostrarTarefas();
-  } else if (e.target.classList.contains('clearFilter')) {
+  if (e.target.className === 'filter') {
+    filterTarefas();
+  }else if (e.target.className === 'clearFilter') {
     clearFilter();
   }
 });
-filterInput.addEventListener('input', mostrarTarefas);
 
 /*Submit Form*/
 form.onsubmit = function (e) {

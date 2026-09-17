@@ -27,34 +27,22 @@ Excluir - estava com uma função que eu apaguei sem querer, tive que pesquisar 
 Adicionar tarefa - id como data ao inves de dia
 resolvi todos pelo deltools
 
-## Mesclagem com a versão `modify`
-
-A pasta `modify` (layout com template string, pesquisa com botões Pesquisar/Limpar) foi juntada
-nesta pasta e apagada. Erros encontrados na junção e o que foi feito:
-
-- `<body>` com um `>` sobrando antes (`><body>`) - removido
-- Excluir com id que não existe apagava a ÚLTIMA tarefa (`findIndex` retorna -1 e `splice(-1, 1)` tira a última) - agora checa `-1` antes
-- Mudar status com id inexistente quebrava (`tarefas[-1]`) - mesma checagem
-- Pesquisar "pendente" mostrava todas as tarefas, porque a busca usava o texto do `<li>` inteiro, que inclui as opções do select - agora pesquisa só em assunto, responsável, descrição e status
-- Tarefa nova aparecia mesmo com pesquisa ativa - agora a lista é redesenhada aplicando o filtro depois de adicionar, excluir ou mudar status
-- Texto digitado com HTML (ex: `<b>oi</b>`) era renderizado pelo `innerHTML` - agora passa por `escapeHtml`
-- Tarefas antigas `{ id, nome, check }` quebravam o `formatarData` (data `undefined`) - voltou a função `migrarTarefa` e data vazia mostra `--/--/----`
-- Dava pra salvar término antes do início - agora mostra erro
-- `label for="status"` da pesquisa apontava pro select do formulário - trocado para `filterInput`
-
 # As tarefas 
 
 Antes a tarefa era só `{ id, nome, check }`. Agora tem os campos necessarios. 
 
+
+# Juntando com o modify
+
+juntei o codigo com a pasta `modify`, agora é uma pasta só.
+Excluir com id errado apagava a ultima tarefa - agora checa o -1 do findIndex antes
+
 # Etapa 2 - Backend
 
-Regra: o mais simples possível, poucos arquivos. Ordem dos arquivos:
+comecei em `gerenciador-tarefas/backend/`
 
-- [x] 1. `package.json` - criado com `npm init -y` (identidade do projeto: nome, bibliotecas, comandos)
-- [x] 2. `node_modules/` e `package-lock.json` - aparecem sozinhos com `npm install express`
-- [ ] 3. `server.js` - começar só com um "olá mundo"
-- [ ] 4. nodemon - `npm install -D nodemon` + script `dev` no `package.json`
-- [ ] 5. `.gitignore` com `node_modules/` (até lá, não usar `git add .`, senão o node_modules vai junto)
-- [ ] 6. banco e tabelas (dentro do `server.js`)
-- [ ] 7. rotas, uma de cada vez, testando no Postman
-- [ ] 8. `Dockerfile`
+`npm init -y` - cria o package.json (nome, bibliotecas e comandos do projeto)
+`npm install express` - baixa o express na node_modules e cria o package-lock.json
+
+node_modules não vai pro git, se apagar é só rodar `npm install` de novo
+proximo passo: server.js
