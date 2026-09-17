@@ -46,7 +46,8 @@ input, select, textarea{
 }
 
 button{
-    margin-top: 10px;
+    margin-top: 0px;
+        /*Alterado de 10 para 0*/
     padding: 8px;
     border: none;
     border-radius: 5px;
@@ -89,4 +90,33 @@ button{
 
 .delete{
     background-color: red;
+}
+
+/*Bloco de pesquisar */
+#filter {
+    display: flex;
+    flex-direction: column;
+    margin: 10px 0;
+}
+
+#filter .input-group {
+    display: flex;
+    justify-content: space-between;
+    flex: 1;
+}
+
+#filter #filterInput {
+    flex: 1;
+}
+
+#filter .clearFilter {
+    background-color: #5f56ef;
+}
+
+#filter button {
+    margin-left: 1px;
+}
+
+.mt10 {
+    margin-top: 10px !important;
 }

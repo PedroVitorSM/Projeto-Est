@@ -1,210 +1,211 @@
 // Lista de tarefas com localStorage
-// Comitt do codigo incorreto, comittei o codigo de leitura
 
-var form = document.querySelector('#form-tarefa');
-var container = document.querySelector('#tarefas');
-var erro = document.querySelector("#erro");
-var LISTA_STATUS = ['pendente', 'andamento', 'finalizado'];
+var form = document.getElementById('form-tarefa');
+var container = document.getElementById('tarefas');
+var filterInput = document.getElementById('filterInput');
+var LISTA_STATUS = [{id: 'pendente', slug: 'Pendente'}, {id: 'andamento', slug: 'Em Andamento'}, {id: 'finalizado', slug: 'Finalizado'}];
 var tarefas = [];
-var busca = document.querySelector('#busca');
 
+// recupera o que já estava salvo no navegador
 try {
   var salvo = JSON.parse(localStorage.getItem('tarefas'));
-
   if (Array.isArray(salvo)) {
-    tarefas = salvo;
+    tarefas = salvo.map(migrarTarefa);
+    save();
   }
 } catch (e) {
-  console.log('sem lista de tarefas');
-  tarefas = [];
+  sendErro('Não foi possível ler as tarefas salvas.');
 }
 
-
+/*Storage Save*/
 function save() {
   localStorage.setItem('tarefas', JSON.stringify(tarefas));
 }
 
+function sendErro(msg) {
+  document.getElementById('erro').textContent = msg;
+}
+
+/*Converte tarefas do formato antigo { id, nome, check }*/
 function migrarTarefa(t) {
   if (t.status) {
     return t;
   }
-
-  var status = 'pendente';
-  if (t.check === true) {
-    status = 'finalizado';
-  }
-
   return {
     id: t.id,
     responsavel: '',
+    assunto: t.nome || '',
     dataInicio: '',
     dataTermino: '',
-    assunto: t.nome || '',
     descricao: '',
-    status: status,
-    respostas: []
+    status: t.check === true ? 'finalizado' : 'pendente'
   };
 }
 
-for (var i = 0; i < tarefas.length; i++) {
-  tarefas[i] = migrarTarefa(tarefas[i]);
-}
-save();
-function mostrarErro(msg) {
-    erro.textContent = msg;
-}
-
-function nomeDoStatus(status) {
-  if (status === 'andamento') {
-    return 'Em andamento';
-  }
-  if (status === 'finalizado') {
-    return 'Finalizado';
-  }
-  return 'Pendente';
-  
-}
-
-function montarTarefa(tarefa) {
-  var li = document.createElement('li');
-  li.className = 'tarefa ' + tarefa.status;
-
-
-  var assunto = document.createElement('h3');
-  assunto.textContent = tarefa.assunto;
-  li.appendChild(assunto);
-
-  var responsavel = document.createElement('p');
-  responsavel.textContent = 'Responsável: ' + tarefa.responsavel;
-  li.appendChild(responsavel);
-
-  var prazo = document.createElement('p');
-  prazo.className = 'prazo';
-  prazo.textContent = formatarData(tarefa.dataInicio) + ' até ' + formatarData(tarefa.dataTermino);
-  li.appendChild(prazo);
-
-  if (tarefa.descricao != '') {
-    var descricao = document.createElement('p');
-    descricao.textContent = tarefa.descricao;
-    descricao.className = 'descricao';
-    li.appendChild(descricao);
-  }
-
-  var rodape = document.createElement('div');
-  rodape.className = 'rodape';
-
-  var troca = document.createElement('select');
-
-  for (var i = 0; i < LISTA_STATUS.length; i++) {
-    var opcao = document.createElement('option');
-    opcao.value = LISTA_STATUS[i];
-    opcao.textContent = nomeDoStatus(LISTA_STATUS[i]);
-
-    if (LISTA_STATUS[i] === tarefa.status) {
-        opcao.selected = true;
-    }
-
-    troca.appendChild(opcao);
-  }
-
-  troca.onchange = function () {
-    var pos = acharPosicao(tarefa.id);
-    if (pos === -1) {
-      return;
-    }
-
-    tarefas[pos].status = this.value;
-    save();
-    mostrarTarefas();
-  };
-
-  rodape.appendChild(troca);
-
-  function acharPosicao(id) {
-    for (var i = 0; i < tarefas.length; i++) {       // roda ate achar o id
-      if (tarefas[i].id === id) {
-        return i; // posição do id
-      }
-    }
-    return -1; // rodo tudo e não achou
-  }
-
-  var excluir = document.createElement('button');
-  excluir.className = 'delete';
-  excluir.textContent = 'Excluir';
-  excluir.onclick = function () {
-    var pos = acharPosicao(tarefa.id);
-    if (pos === -1) {
-      return;
-    }
-
-    tarefas.splice(pos, 1);
-    save();
-    mostrarTarefas();
-  };
-
-  rodape.appendChild(excluir);
-  li.appendChild(rodape);
-  return li;
-}
-
-function formatarData(valor) {
-  if (!valor) {
-    return ' ';
-  }
-
-  var partes = valor.split('T');
-  var data = partes[0].split('-');
-
-  return data[2] + ' - ' + data[1] + ' - ' + data[0];
-}
-
-function mostrarTarefas() {
-
-  container.textContent = '';
-  var termo = busca.value.toLowerCase(); 
-  for (var i = 0; i < tarefas.length; i++) {
-    if (tarefas[i].assunto.toLowerCase().indexOf(termo) === -1) {
-      continue;
-    }
-    container.appendChild(montarTarefa(tarefas[i]));
-  }
-}
-
-form.onsubmit = function (e) {
-  e.preventDefault();
-
-  var assunto = document.querySelector('#assunto').value;
-  var responsavel = document.querySelector('#responsavel').value;
-  var diaInicio = document.querySelector('#diaInicio').value;
-  var diaTermino = document.querySelector('#diaTermino').value;
-  var descricao = document.querySelector('#descricao').value;
-  var status = document.querySelector('#status').value;
-
-  if (assunto == '' || responsavel == '' || diaInicio == '' || diaTermino == '' ) {
-    mostrarErro('Preencha todos os campos da tarefa.');
+/*Adiciona uma nova tarefa*/
+function addTarefa() {
+  let responsavel = form.querySelector('#responsavel').value.trim();
+  let assunto = form.querySelector('#assunto').value.trim();
+  let dataInicio = form.querySelector('#diaInicio').value.trim();
+  let dataTermino = form.querySelector('#diaTermino').value.trim();
+  let descricao = form.querySelector('#descricao').value.trim();
+  let status = form.querySelector('#status').value.trim();
+  if (responsavel === '' || assunto === '' || dataInicio === '' || dataTermino === '' || descricao === '' || status === '') {
+    sendErro('Campos obrigatórios não preenchidos');
     return;
   }
-
+  if (dataTermino < dataInicio) {
+    sendErro('A data de término não pode ser antes da data de início');
+    return;
+  }
   var novaTarefa = {
     id: Date.now(),
-    responsavel: responsavel,
-    dataInicio: diaInicio,
-    dataTermino: diaTermino,
-    assunto: assunto,
-    descricao: descricao,
-    status: status,
-    respostas: []
+    responsavel,
+    assunto,
+    dataInicio,
+    dataTermino,
+    descricao,
+    status
   };
-
   tarefas.push(novaTarefa);
   save();
+  clearForm();
   mostrarTarefas();
+}
 
+function clearForm(){
   form.reset();
-  mostrarErro('');
+  sendErro('');
+}
+
+/*Deleta uma tarefa*/
+function deleteTarefa(id){
+  let pos = tarefas.findIndex(tarefa => tarefa.id === id);
+  if (pos === -1) {
+    return;
+  }
+  tarefas.splice(pos, 1);
+  save();
+  mostrarTarefas();
+}
+
+/*Muda status da tarefa*/
+function changeStatus(id, value){
+  let pos = tarefas.findIndex(tarefa => tarefa.id === id);
+  if (pos === -1) {
+    return;
+  }
+  tarefas[pos].status = value;
+  save();
+  mostrarTarefas();
+}
+
+/*Formata Data*/
+function formatarData(str){
+  if (!str) {
+    return '--/--/----';
+  }
+  return str.split('T')[0].split('-').reverse().join('/');
+}
+
+/*Troca < > & e aspas para o texto digitado não virar HTML*/
+function escapeHtml(texto){
+  return String(texto)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function nomeDoStatus(id){
+  let status = LISTA_STATUS.find(status => status.id === id);
+  return status ? status.slug : id;
+}
+
+/*Create select options*/
+function createSelect(selected){
+  return `
+  <select class='troca_status'>
+  ${LISTA_STATUS.map(status => {
+    return `<option value='${status.id}' ${status.id === selected ? 'selected' : ''}>${status.slug}</option>`;
+  }).join('')}
+</select>
+`;
+}
+
+/*Layout da tarefa*/
+function layoutTarefa(tarefa){
+  let dataInicio = formatarData(tarefa.dataInicio);
+  let dataTermino = formatarData(tarefa.dataTermino);
+
+  let descricao = tarefa.descricao ? `<p>${escapeHtml(tarefa.descricao)}</p>` : '';
+  let select_status = createSelect(tarefa.status);
+
+  return `
+<li id='${tarefa.id}' class='tarefa ${escapeHtml(tarefa.status)}'>
+  <h3>${escapeHtml(tarefa.assunto)}</h3>
+  <p>Responsável: ${escapeHtml(tarefa.responsavel)}</p>
+  <p class='prazo'>${dataInicio} até ${dataTermino}</p>
+  ${descricao}
+  <div class='rodape'>
+    ${select_status}
+    <button class="delete">Excluir</button>
+  </div>
+</li>`;
+}
+
+/*Pesquisa só nos dados da tarefa (sem pegar o texto das opções do select)*/
+function combinaComFiltro(tarefa, filter){
+  let texto = [tarefa.assunto, tarefa.responsavel, tarefa.descricao, nomeDoStatus(tarefa.status)].join(' ').toLowerCase();
+  return texto.includes(filter);
+}
+
+/*Mostra na view as tarefas que batem com a pesquisa*/
+function mostrarTarefas() {
+  let filter = filterInput.value.trim().toLowerCase();
+  container.innerHTML = tarefas
+    .filter(tarefa => combinaComFiltro(tarefa, filter))
+    .map(tarefa => layoutTarefa(tarefa))
+    .join('');
+}
+
+function clearFilter(){
+  filterInput.value = '';
+  mostrarTarefas();
+}
+
+/*Pega o id da tarefa a partir de qualquer elemento dentro do <li>*/
+function idDaTarefa(elemento){
+  return Number(elemento.closest('li').id);
+}
+
+/*Actions*/
+container.addEventListener('click', function(e) {
+  if (e.target.classList.contains('delete')) {
+    deleteTarefa(idDaTarefa(e.target));
+  }
+});
+container.addEventListener('change', function(e) {
+  if (e.target.classList.contains('troca_status')) {
+    changeStatus(idDaTarefa(e.target), e.target.value);
+  }
+});
+var filter = document.getElementById('filter');
+filter.addEventListener('click', function(e) {
+  if (e.target.classList.contains('filter')) {
+    mostrarTarefas();
+  } else if (e.target.classList.contains('clearFilter')) {
+    clearFilter();
+  }
+});
+filterInput.addEventListener('input', mostrarTarefas);
+
+/*Submit Form*/
+form.onsubmit = function (e) {
+  e.preventDefault();
+  addTarefa();
 };
 
-busca.oninput = mostrarTarefas;
+/*Carrega as tarefas na view se houver alguma salva no localStorage*/
 window.onload = mostrarTarefas;
-
