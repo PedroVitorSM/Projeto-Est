@@ -46,4 +46,15 @@ nesta pasta e apagada. Erros encontrados na junção e o que foi feito:
 
 Antes a tarefa era só `{ id, nome, check }`. Agora tem os campos necessarios. 
 
+# Etapa 2 - Backend
 
+Regra: o mais simples possível, poucos arquivos. Ordem dos arquivos:
+
+- [x] 1. `package.json` - criado com `npm init -y` (identidade do projeto: nome, bibliotecas, comandos)
+- [x] 2. `node_modules/` e `package-lock.json` - aparecem sozinhos com `npm install express`
+- [ ] 3. `server.js` - começar só com um "olá mundo"
+- [ ] 4. nodemon - `npm install -D nodemon` + script `dev` no `package.json`
+- [ ] 5. `.gitignore` com `node_modules/` (até lá, não usar `git add .`, senão o node_modules vai junto)
+- [ ] 6. banco e tabelas (dentro do `server.js`)
+- [ ] 7. rotas, uma de cada vez, testando no Postman
+- [ ] 8. `Dockerfile`
