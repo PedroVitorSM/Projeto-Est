@@ -1,0 +1,17 @@
+name: gerenciador-tarefas
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: tarefas
+      POSTGRES_PASSWORD: tarefas
+      POSTGRES_DB: tarefas
+    ports:
+      - "127.0.0.1:5434:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  pgdata:

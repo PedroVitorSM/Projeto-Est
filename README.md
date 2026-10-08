@@ -45,4 +45,29 @@ comecei em `gerenciador-tarefas/backend/`
 `npm install express` - baixa o express na node_modules e cria o package-lock.json
 
 node_modules não vai pro git, se apagar é só rodar `npm install` de novo
-proximo passo: server.js
+
+## O que usamos e por que
+
+**PostgreSQL** - banco relacional (tabelas). as tarefas antes ficavam numa variavel na memoria e sumiam quando o servidor desligava. escolhi Postgres porque é o mesmo do HPVision e é usado em produção de verdade.
+
+**Docker** - docker pra banco relacional. o banco roda num container isolado.
+
+
+**Tabela tarefas** - `id` numera sozinho, `NOT NULL` deixa o banco barrar campo vazio, `status` nasce `pendente` e só aceita pendente/andamento/finalizado. a regra fica no banco tambem, não só no front.
+
+**pg + Pool (`db.js`)** - usa `127.0.0.1` porque no windows o localhost pode virar `::1`.
+
+**express.json()** - middleware. sem ele o POST não le os dados.
+
+**Rotas REST** - mesmo endereço, verbo diferente: GET lista ✅, POST cria ✅.
+
+**to_char na data** - devolve como texto. 
+
+**$1, $2 no SQL** - os valores vão separados do comando, evita SQL Injection. nunca `${}` com valor do usuario.
+
+**Codigos HTTP** - `201` criado, `400` pedido errado (culpa de quem mandou), `500` erro no servidor.
+
+
+## Proximo passo
+
+validação, PUT, DELETE, Nodemon, Postman, separar em routes/controllers/models, Node no Docker
