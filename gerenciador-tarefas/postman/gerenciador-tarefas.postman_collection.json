@@ -1,0 +1,114 @@
+{
+  "info": {
+    "name": "Gerenciador de Tarefas",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "tarefaId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "1. Listar tarefas",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/tarefas"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Criar tarefa",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/tarefas",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"responsavel\": \"Pedro\",\n  \"assunto\": \"Testar no Postman\",\n  \"dataInicio\": \"2026-10-29T09:00\",\n  \"dataTermino\": \"2026-10-29T12:00\",\n  \"descricao\": \"Tarefa criada pelo Postman\",\n  \"status\": \"pendente\"\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 201', () => pm.response.to.have.status(201));",
+              "pm.collectionVariables.set('tarefaId', pm.response.json().id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Editar tarefa",
+      "request": {
+        "method": "PUT",
+        "url": "{{baseUrl}}/tarefas/{{tarefaId}}",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"responsavel\": \"Pedro\",\n  \"assunto\": \"Testar no Postman\",\n  \"dataInicio\": \"2026-10-29T09:00\",\n  \"dataTermino\": \"2026-10-29T12:00\",\n  \"descricao\": \"Tarefa editada pelo Postman\",\n  \"status\": \"finalizado\"\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "pm.test('Ficou finalizado', () => pm.expect(pm.response.json().status).to.eql('finalizado'));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Excluir tarefa",
+      "request": {
+        "method": "DELETE",
+        "url": "{{baseUrl}}/tarefas/{{tarefaId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 204', () => pm.response.to.have.status(204));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Criar sem responsável (erro 400)",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/tarefas",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"responsavel\": \"\",\n  \"assunto\": \"Sem responsável\",\n  \"dataInicio\": \"2026-10-29T09:00\",\n  \"dataTermino\": \"2026-10-29T12:00\",\n  \"descricao\": \"Deve dar erro\",\n  \"status\": \"pendente\"\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 400', () => pm.response.to.have.status(400));"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

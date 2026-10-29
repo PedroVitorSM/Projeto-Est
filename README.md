@@ -59,7 +59,11 @@ node_modules não vai pro git, se apagar é só rodar `npm install` de novo
 
 **express.json()** - middleware. sem ele o POST não le os dados.
 
-**Rotas REST** - mesmo endereço, verbo diferente: GET lista ✅, POST cria ✅.
+**Rotas REST** - mesmo endereço, verbo diferente: GET lista ✅, POST cria ✅, PUT edita ✅, DELETE exclui ✅.
+
+**init.sql** - a tabela agora fica salva em `gerenciador-tarefas/db/init.sql`, o Postgres cria sozinho quando o banco é novo.
+
+**Validação** - o servidor confere os campos antes de ir pro banco e devolve `400` com mensagem.
 
 **to_char na data** - devolve como texto. 
 
@@ -67,7 +71,39 @@ node_modules não vai pro git, se apagar é só rodar `npm install` de novo
 
 **Codigos HTTP** - `201` criado, `400` pedido errado (culpa de quem mandou), `500` erro no servidor.
 
+**Pastas do backend** - `routes/` diz qual endereço chama qual função, `controllers/` valida e responde, `models/` fala com o banco (SQL).
+
+**Nodemon** - reinicia o servidor sozinho quando salva um arquivo. `npm run dev` usa nodemon, `npm start` usa node normal.
+
+**Node no Docker** - o `Dockerfile` monta a imagem da API e o `docker-compose.yml` sobe banco + API juntos. dentro do Docker a API acha o banco pelo nome `postgres`, não pelo `127.0.0.1`.
+
+**Postman** - a coleção fica em `gerenciador-tarefas/postman/`. no Postman: Import > escolher o arquivo > Run collection.
+
+Se quiser rodar tudo no Docker (banco + API):
+
+```
+cd gerenciador-tarefas
+docker compose up -d --build
+```
+
+Se quiser programar com nodemon (só o banco no Docker):
+
+```
+cd gerenciador-tarefas
+docker compose up -d postgres
+cd backend
+npm run dev
+```
+
+uma de cada vez, as duas usam a porta 3000
+
+## => http://localhost:3000/tarefas
+
+## Erros
+
+Docker não montava a API, dava `invalid file request db.js`
+API não subia, porta 3000 ocupada
 
 ## Proximo passo
 
-validação, PUT, DELETE, Nodemon, Postman, separar em routes/controllers/models, Node no Docker
+Etapa 3 - frontend com Angular ou React
